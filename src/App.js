@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { Component } from 'react';
+
 import image2 from './images/profile.jpg'
 import image3 from './images/peoples.jpg'
 import image4 from './images/create.png'
@@ -7,14 +8,104 @@ import image6 from './images/wallet.PNG'
 import image7 from './images/vendor.PNG'
 import image8 from './images/facebook.png'
 import image9 from './images/twitter.png'
+import PaystackButton from 'react-paystack';
 import './App.css';
 
-function App() {
+
+  
+class App extends Component {
+  
+  constructor(props){
+    super(props)
+    
+    this.state = {
+    key: "pk_test_1007e9b8ddb07fc05a17864b53865c135a948fbe", //PAYSTACK PUBLIC KEY
+    email: "judgechuks@gmail.com",  // customer email
+    amount: 10000, //equals NGN100,
+    domain: 'http://localhost:4000/api', 
+  }
+
+}
+
+componentDidMount() {
+      
+    // const script = document.createElement("script");
+    // script.src = "https://js.paystack.co/v1/inline.js";
+    // script.async = true;
+    // document.body.appendChild(script);
+
+      // document.body.appendChild(script);
+}
+
+
+
+
+  getReference = () => {
+    //you can put any unique reference implementation code here
+    let text = "";
+    let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-.=";
+
+    for( let i=0; i < 15; i++ )
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+  }
+
+  sendDATA=(e)=>{
+    e.preventDefault();
+    // const email = Math.floor(Math.random()*90000) + 10000 + req.body.email + Math.floor(Math.random()*90000)
+    // const fullname = req.body.fullname
+    // const username  = req.body.username
+    // const amount  = req.body.amount + 00
+    // const id  = req.body.user_id
+    const data = {
+      email:this.email.value,
+      fullname:this.fullname.value,
+      username:"mom@gmail.com",
+      amount:this.amount.value,
+      id :"95383068390636jkngdibnso",
+    }
+    
+      const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json','Access-Control-Allow-Origin': '*' },
+        body: JSON.stringify(data),
+    };
+  console.log("requestOptions----------------------------->",requestOptions)
+        fetch(this.state.domain+"/texting", requestOptions)
+        .then(res => res.json())
+          .then((res)=>{
+        console.log("res", res)
+        if(res.status === "true"){
+          this.setState({
+            loading:false
+          })
+          // console.log("res   --------------------->true", res)
+          this.props.history.replace('/login');
+
+        }else{
+          //  console.log("res   --------------------->false", res)
+          
+          this.setState({
+            loading:false,
+            messageError:"Reset password",
+            messageif:true
+          })
+        }
+    }).catch( (error) => {
+      //  console.log("errro", error);
+      //  console.log("error load", error )
+    });
+  }
+
+
+  render(){
+     console.log("log email random  -------->",Math.floor(Math.random()*90000) + 10000 +"judgegmail.com" + Math.floor(Math.random()*90000) )
   return (
 
     <div className="App">
-
-      <div class="columns topheader">
+    
+    <div class="columns topheader">
         <div class="column is-half header">
 
           <h1 className="share-h1">Share Creativity</h1>
@@ -22,13 +113,93 @@ function App() {
 
         </div>
         <div class="column">
-          <div className='imgprofile'>
-            <img className='img1' src={image2} alt="screenshot" /></div>
+        <div>
+
+        <form id="paymentForm"  onSubmit={this.sendDATA}>
+            <div class="field is-horizontal">
+                  <div class="field-label is-normal">
+                    <label class="label setting-profile-input-lable"  >Fullname</label>
+                  </div>
+                  <div class="field-body">
+                    <div class="field">
+                      <p class="control">
+                        <input class="input" type="text" placeholder="Recipient fullname" required  ref={input =>this.fullname = input} />
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="field is-horizontal">
+                  <div class="field-label is-normal">
+                    <label class="label setting-profile-input-lable"  >Email</label>
+                  </div>
+                  <div class="field-body">
+                    <div class="field">
+                      <p class="control">
+                        <input class="input" type="email" placeholder="Recipient email" required  ref={input =>this.email = input} />
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="field is-horizontal">
+                  <div class="field-label is-normal">
+                    <label class="label setting-profile-input-lable"  >Amount</label>
+                  </div>
+                  <div class="field-body">
+                    <div class="field">
+                      <p class="control">
+                        <input class="input" type="text" placeholder="Amount" required  ref={input =>this.amount = input} />
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+            {/* <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email-address" required />
+              <br/>
+            </div>  
+            <div class="form-group">
+              <label for="amount">Amount</label>
+              <input type="tel" id="amount" required />
+              <br/>
+            </div>  
+            <div class="form-group">
+              <label for="first-name">First Name</label>
+              <input type="text" id="first-name" />
+              <br/>
+            </div>  
+            <div class="form-group">
+              <label for="last-name">Last Name</label>
+              <input type="text" id="last-name" />
+              <br/>
+            </div>   */}
+            <div class="form-submit">
+              <button type="submit"> Pay </button> 
+            </div>
+          </form>
+            <p>
+              {/* <PaystackButton
+                text="Make Payment"
+                className="payButton"
+                callback={this.callback}
+                close={this.close}
+                disabled={true}
+                embed={true}
+                reference={this.getReference()}
+                email={this.state.email}
+                amount={this.state.amount}
+                paystackkey={this.state.key}
+                tag="button"
+              /> */}
+            </p>
+          </div>
+          {/* <div className='imgprofile'>
+            <img className='img1' src={image2} alt="screenshot" />
+            </div> */}
 
         </div>
 
       </div>
-
 
       <div className="columns two">
         <div className="column is-half blue">
@@ -88,7 +259,6 @@ function App() {
 
       </div>
 
-
  <footer>
         <div className=" social">
             <div className="footerp">
@@ -111,19 +281,12 @@ function App() {
         </div>
     </footer>
 
-{/* <footer className="footer">
-  <div className="content has-text-centered">
-    <p>
-      <strong>&copy; NairaHot 2020</strong>  </p>
-       {/* <div className="footerimg">  
-            <img  className="imgfb" src={image8} alt="twitter"/>
-              <img className="imgfb" src={image9} alt="facebook"/>
-              {/* </div> 
-   </div> 
-</footer> */}
+
 
     </div>
   );
+
+  }
 }
 
 export default App;
